@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Phishing Detector</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="chat-card">
+      <h1>🕵️‍♂️ AI Phishing Detector</h1>
+      <p class="subtitle">Upload an <b>.eml</b> email file and let the AI detect if it’s phishing.</p>
+
+      <div class="upload-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".eml" hidden>
+        <button id="uploadBtn">📎 Choose .eml file</button>
+        <p id="fileName">No file selected</p>
+      </div>
+
+      <button id="analyzeBtn" disabled>🚀 Analyze Email</button>
+
+      <div id="result" class="result-card hidden">
+        <h2>Analysis Result</h2>
+        <pre id="resultText"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const resultCard = document.getElementById('result');
+    const resultText = document.getElementById('resultText');
+
+    uploadBtn.onclick = () => fileInput.click();
+
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      if (file) {
+        fileName.textContent = file.name;
+        analyzeBtn.disabled = false;
+      }
+    };
+
+    analyzeBtn.onclick = async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      resultCard.classList.remove('hidden');
+      resultText.textContent = "Analyzing email... 🧠";
+
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          body: formData
+        });
+        const data = await response.json();
+        resultText.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultText.textContent = "❌ Error analyzing the file.";
+       
+      }
+    };
+  </script>
+</body>
+</html>
