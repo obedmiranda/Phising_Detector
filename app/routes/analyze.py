@@ -3,6 +3,7 @@ from app.schemas.email_analysis import EmailAnalysisResponse
 import email
 from email import policy
 from io import BytesIO
+from app.chains.phishing_chain import PhishingChain  
 
 router = APIRouter()
 
@@ -32,13 +33,14 @@ async def analyze_email(file: UploadFile = File(...)):
             "reason": f"Error reading email: {str(e)}",
             "summary": "Could not parse .eml file"
         }
-    print(body)
-    # Mock result (más adelante esto se conectará con LangChain)
-    return {
-        "classification": "Phishing" if "login" in body.lower() else "Safe",
-        "confidence": 0.85,
-        "reason": "Detected suspicious keywords" if "login" in body.lower() else "No phishing indicators found",
-        "summary": f"Email from {sender or 'Unknown'} with subject '{subject or 'No subject'}'."
-    }
+  
+    phishing_chain = PhishingChain()
+
+    result = await phishing_chain.analyze_email(
+        sender=sender or "Unknown",
+        subject=subject or "No Subject",
+        email_text=body or ""
+    )
 
 
+    return result
