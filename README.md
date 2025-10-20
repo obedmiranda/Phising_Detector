@@ -110,6 +110,10 @@ Phishing_Detector/
 
 ---
 
+## Upcoming: RAG Integration
+- Add document loaders (PDF, email, CSV)
+- Embed known phishing and safe examples
+- Build a retrieval layer to give context to the LLM
 🧑‍💻 Author
 
 Obed Miranda Picado  
